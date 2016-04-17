@@ -1,4 +1,4 @@
-package pl.edu.agh.aco;
+package pl.edu.agh.aco.spsp;
 
 /**
  * Utilities methods for Flow-Shop problem solving.
@@ -18,14 +18,14 @@ public class FlowShopUtils {
 	 *            Problem graph.
 	 * @return Schedule makespan.
 	 */
-	public static double getScheduleMakespan(int[] schedule, double[][] jobInfo) {
-		int machines = jobInfo[0].length;
+	public static double getScheduleMakespan(int[] schedule, double[] jobInfo) {
+		int machines = jobInfo.length;
 		double[] machinesTime = new double[machines];
 		double tiempo = 0;
 
 		for (int job : schedule) {
 			for (int i = 0; i < machines; i++) {
-				tiempo = jobInfo[job][i];
+				tiempo = jobInfo[i];
 				if (i == 0) {
 					machinesTime[i] = machinesTime[i] + tiempo;
 				} else {

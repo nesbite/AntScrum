@@ -1,14 +1,9 @@
 package pl.edu.agh.aco.spsp;
 
-import pl.agh.edu.iet.bo.aco.config.Config;
-import pl.agh.edu.iet.bo.aco.view.SchedulingFrame;
+import pl.edu.agh.aco.spsp.config.Config;
+import pl.edu.agh.aco.spsp.view.SchedulingFrame;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
 
 /**
  * Appies the MAX-MIN Ant System algorithm to Flow-Shop Problem instance.
@@ -18,7 +13,8 @@ import java.util.LinkedList;
  */
 public class ACOFlowShop {
 
-    private double[][] graph;
+    private final int numberOfEmployees;
+    private double[] graph;
     private double pheromoneTrails[][] = null;
     private Ant antColony[] = null;
 
@@ -29,21 +25,17 @@ public class ACOFlowShop {
     String bestScheduleAsString = "";
     public double bestScheduleMakespan = -1.0;
 
-    public ACOFlowShop(double[][] graph) {
+    public ACOFlowShop(double[] graph, int numberOfEmployees) {
         this.numberOfJobs = graph.length;
-        System.out.println("Number of Jobs: " + numberOfJobs);
+        this.numberOfEmployees = numberOfEmployees;
 
-        int numberOfMachines = graph[0].length;
-        for (int i = 1; i < numberOfJobs; i++) {
-            if (graph[i].length != numberOfMachines) {
-                throw new RuntimeException("The input file is incorrect");
-            }
-        }
-        System.out.println("Number of Machines: " + numberOfMachines);
+        System.out.println("Number of Jobs: " + numberOfJobs);
+        System.out.println("Number of Machines: " + numberOfEmployees);
 
         this.numberOfAnts = Config.NUMBER_OF_ANTS;
         System.out.println("Number of Ants in Colony: " + numberOfAnts);
         this.graph = graph;
+
         this.pheromoneTrails = new double[numberOfJobs][numberOfJobs];
         this.antColony = new Ant[numberOfAnts];
         for (int j = 0; j < antColony.length; j++) {
@@ -51,29 +43,7 @@ public class ACOFlowShop {
         }
     }
 
-    public static void main(String... args) {
-        System.out.println("ACO FOR FLOW SHOP SCHEDULLING");
-        System.out.println("=============================");
-
-        try {
-            String fileDataset = Config.DATA_PATH;
-            System.out.println("Data file: " + fileDataset);
-            double[][] graph = getProblemGraphFromFile(fileDataset);
-            ACOFlowShop acoFlowShop = new ACOFlowShop(graph);
-            System.out.println("Starting computation at: " + new Date());
-            long startTime = System.nanoTime();
-            acoFlowShop.solveProblem();
-            long endTime = System.nanoTime();
-            System.out.println("Finishing computation at: " + new Date());
-            System.out.println("Duration (in seconds): "
-                    + ((double) (endTime - startTime) / 1000000000.0));
-            acoFlowShop.showSolution();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void showSolution() throws ClassNotFoundException,
+    public void showSolution() throws ClassNotFoundException,
             InstantiationException, IllegalAccessException,
             UnsupportedLookAndFeelException {
         for (UIManager.LookAndFeelInfo info : UIManager
@@ -238,48 +208,4 @@ public class ACOFlowShop {
                 + bestScheduleMakespan + ", Schedule: " + bestScheduleAsString);
     }
 
-    /**
-     * Reads a text file and returns a problem matrix.
-     *
-     * @param path File to read.
-     * @return Problem matrix.
-     * @throws IOException
-     */
-    public static double[][] getProblemGraphFromFile(String path)
-            throws IOException {
-        double graph[][] = null;
-        FileReader fr = new FileReader(path);
-        BufferedReader buf = new BufferedReader(fr);
-        String line;
-        int i = 0;
-
-        while ((line = buf.readLine()) != null) {
-            if (i > 0) {
-                String splitA[] = line.split(" ");
-                LinkedList<String> split = new LinkedList<String>();
-                for (String s : splitA) {
-                    if (!s.isEmpty()) {
-                        split.add(s);
-                    }
-                }
-                int j = 0;
-                for (String s : split) {
-                    if (!s.isEmpty()) {
-                        graph[i - 1][j++] = Integer.parseInt(s);
-                    }
-                }
-            } else {
-                String firstLine[] = line.split(" ");
-                String numberOfJobs = firstLine[0];
-                String numberOfMachines = firstLine[1];
-
-                if (graph == null) {
-                    graph = new double[Integer.parseInt(numberOfJobs)][Integer
-                            .parseInt(numberOfMachines)];
-                }
-            }
-            i++;
-        }
-        return graph;
-    }
 }

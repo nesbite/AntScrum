@@ -1,16 +1,11 @@
 package pl.edu.agh.aco.spsp;
 
-import pl.edu.agh.aco.FlowShopUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 /**
  * An Ant that belongs to Colony in the context of ACO.
- *
- * @author Carlos G. Gavidia (cgavidia@acm.org)
- * @author Adrián Pareja (adrian@pareja.com)
  */
 public class Ant {
 
@@ -51,7 +46,7 @@ public class Ant {
      * @param graph  Problem graph.
      * @return Next node to move.
      */
-    public int selectNextNode(double[][] trails, double[][] graph) {
+    public int selectNextNode(double[][] trails, double[] graph) {
         int nextNode = 0;
         Random random = new Random();
         double randomValue = random.nextDouble();
@@ -156,7 +151,7 @@ public class Ant {
      * @param graph Problem graph.
      * @return Makespan of the solution.
      */
-    public double getSolutionMakespan(double[][] graph) {
+    public double getSolutionMakespan(double[] graph) {
         return FlowShopUtils.getScheduleMakespan(solution, graph);
     }
 
@@ -165,7 +160,7 @@ public class Ant {
      *
      * @param graph Problem graph.
      */
-    public void improveSolution(double[][] graph) {
+    public void improveSolution(double[] graph) {
         double makespan = getSolutionMakespan(graph);
 
         int[] localSolutionJobs = new int[solution.length];

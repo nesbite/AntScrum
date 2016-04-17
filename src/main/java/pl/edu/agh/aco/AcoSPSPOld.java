@@ -1,6 +1,6 @@
 package pl.edu.agh.aco;
 
-public class AcoSPSP {
+public class AcoSPSPOld {
     private int employees;
     private int tasks;
     private int skills;

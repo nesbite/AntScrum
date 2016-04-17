@@ -18,7 +18,7 @@ public class SchedulingFrame extends javax.swing.JFrame {
 	private static final long serialVersionUID = 6254510777986769141L;
 	private int[] solution;
 	private double solutionMakespan;
-	private double[][] problemGraph;
+	private double[] problemGraph;
 
 	/**
 	 * Creates new form SchedulingFrame
@@ -66,7 +66,7 @@ public class SchedulingFrame extends javax.swing.JFrame {
 
 		Color color = null;
 
-		int machines = problemGraph[0].length;
+		int machines = problemGraph.length;
 		double[] machinesTime = new double[machines];
 		double tiempo = 0;
 
@@ -88,7 +88,7 @@ public class SchedulingFrame extends javax.swing.JFrame {
 			posT = posT + 60;
 			posY = 20;
 			for (int i = 0; i < machines; i++) {
-				tiempo = problemGraph[job][i];
+				tiempo = problemGraph[i];
 				posY = posY + height;
 				if (i == 0) {
 					if (posX == 20) {
@@ -125,7 +125,7 @@ public class SchedulingFrame extends javax.swing.JFrame {
 		this.solutionMakespan = makespan;
 	}
 
-	public void setProblemGraph(double[][] matrixs) {
+	public void setProblemGraph(double[] matrixs) {
 		this.problemGraph = matrixs;
 	}
 
