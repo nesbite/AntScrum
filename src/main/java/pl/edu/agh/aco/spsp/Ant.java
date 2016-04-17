@@ -155,7 +155,7 @@ public class Ant {
      * @return Makespan of the solution.
      */
     public double getSolutionMakespan(double[][] graph) {
-        return FlowShopUtils.getScheduleMakespan(solution, graph);
+        return FlowShopUtils.getScheduleMakespan(solution, graph, graph[0].length);
     }
 
     /**
@@ -196,7 +196,7 @@ public class Ant {
                 }
 
                 double newMakespan = FlowShopUtils.getScheduleMakespan(
-                        intermediateSolution, graph);
+                        intermediateSolution, graph, graph[0].length);
 
                 if (newMakespan < makespan) {
                     makespan = newMakespan;
