@@ -1,4 +1,4 @@
-package pl.edu.agh.aco;
+package pl.edu.agh.aco.tsp;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
