@@ -1,9 +1,14 @@
 package pl.edu.agh.aco.spsp;
 
-import pl.edu.agh.aco.spsp.config.Config;
+import pl.edu.agh.aco.spsp.config.ProblemConfiguration;
 import pl.edu.agh.aco.spsp.view.SchedulingFrame;
 
 import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * Appies the MAX-MIN Ant System algorithm to Flow-Shop Problem instance.
@@ -13,8 +18,7 @@ import javax.swing.*;
  */
 public class ACOFlowShop {
 
-    private final int numberOfEmployees;
-    private double[] graph;
+    private double[][] graph;
     private double pheromoneTrails[][] = null;
     private Ant antColony[] = null;
 
@@ -25,17 +29,21 @@ public class ACOFlowShop {
     String bestScheduleAsString = "";
     public double bestScheduleMakespan = -1.0;
 
-    public ACOFlowShop(double[] graph, int numberOfEmployees) {
+    public ACOFlowShop(double[][] graph) {
         this.numberOfJobs = graph.length;
-        this.numberOfEmployees = numberOfEmployees;
-
         System.out.println("Number of Jobs: " + numberOfJobs);
-        System.out.println("Number of Machines: " + numberOfEmployees);
 
-        this.numberOfAnts = Config.NUMBER_OF_ANTS;
+        int numberOfMachines = graph[0].length;
+        for (int i = 1; i < numberOfJobs; i++) {
+            if (graph[i].length != numberOfMachines) {
+                throw new RuntimeException("The input file is incorrect");
+            }
+        }
+        System.out.println("Number of Machines: " + numberOfMachines);
+
+        this.numberOfAnts = ProblemConfiguration.NUMBER_OF_ANTS;
         System.out.println("Number of Ants in Colony: " + numberOfAnts);
         this.graph = graph;
-
         this.pheromoneTrails = new double[numberOfJobs][numberOfJobs];
         this.antColony = new Ant[numberOfAnts];
         for (int j = 0; j < antColony.length; j++) {
@@ -43,13 +51,35 @@ public class ACOFlowShop {
         }
     }
 
-    public void showSolution() throws ClassNotFoundException,
+    public static void main(String... args) {
+        System.out.println("ACO FOR FLOW SHOP SCHEDULLING");
+        System.out.println("=============================");
+
+        try {
+            String fileDataset = ProblemConfiguration.FILE_DATASET;
+            System.out.println("Data file: " + fileDataset);
+            double[][] graph = getProblemGraphFromFile(fileDataset);
+            ACOFlowShop acoFlowShop = new ACOFlowShop(graph);
+            System.out.println("Starting computation at: " + new Date());
+            long startTime = System.nanoTime();
+            acoFlowShop.solveProblem();
+            long endTime = System.nanoTime();
+            System.out.println("Finishing computation at: " + new Date());
+            System.out.println("Duration (in seconds): "
+                    + ((double) (endTime - startTime) / 1000000000.0));
+            acoFlowShop.showSolution();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showSolution() throws ClassNotFoundException,
             InstantiationException, IllegalAccessException,
             UnsupportedLookAndFeelException {
-        for (UIManager.LookAndFeelInfo info : UIManager
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager
                 .getInstalledLookAndFeels()) {
             if ("Nimbus".equals(info.getName())) {
-                UIManager.setLookAndFeel(info.getClassName());
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
                 break;
             }
         }
@@ -73,7 +103,7 @@ public class ACOFlowShop {
      */
     public int[] solveProblem() {
         System.out.println("INITIALIZING PHEROMONE MATRIX");
-        double initialPheromoneValue = Config.MAXIMUM_PHEROMONE;
+        double initialPheromoneValue = ProblemConfiguration.MAXIMUM_PHEROMONE;
         System.out.println("Initial pheromone value: " + initialPheromoneValue);
         for (int i = 0; i < numberOfJobs; i++) {
             for (int j = 0; j < numberOfJobs; j++) {
@@ -84,9 +114,9 @@ public class ACOFlowShop {
         int iteration = 0;
         System.out.println("STARTING ITERATIONS");
         System.out.println("Number of iterations: "
-                + Config.MAX_ITERATIONS);
+                + ProblemConfiguration.MAX_ITERATIONS);
 
-        while (iteration < Config.MAX_ITERATIONS) {
+        while (iteration < ProblemConfiguration.MAX_ITERATIONS) {
             System.out.println("Current iteration: " + iteration);
             clearAntSolutions();
             buildSolutions();
@@ -108,33 +138,33 @@ public class ACOFlowShop {
 
         System.out.println("Performing evaporation on all edges");
         System.out.println("Evaporation ratio: "
-                + Config.EVAPORATION);
+                + ProblemConfiguration.EVAPORATION);
 
         for (int i = 0; i < numberOfJobs; i++) {
             for (int j = 0; j < numberOfJobs; j++) {
                 double newValue = pheromoneTrails[i][j]
-                        * Config.EVAPORATION;
-                if (newValue >= Config.MINIMUM_PHEROMONE) {
+                        * ProblemConfiguration.EVAPORATION;
+                if (newValue >= ProblemConfiguration.MINIMUM_PHEROMONE) {
                     pheromoneTrails[i][j] = newValue;
                 } else {
-                    pheromoneTrails[i][j] = Config.MINIMUM_PHEROMONE;
+                    pheromoneTrails[i][j] = ProblemConfiguration.MINIMUM_PHEROMONE;
                 }
             }
         }
 
         System.out.println("Depositing pheromone on Best Ant trail.");
         Ant bestAnt = getBestAnt();
-        double contribution = Config.Q
+        double contribution = ProblemConfiguration.Q
                 / bestAnt.getSolutionMakespan(graph);
         System.out.println("Contibution for best ant: " + contribution);
 
         for (int i = 0; i < numberOfJobs; i++) {
             double newValue = pheromoneTrails[bestAnt.getSolution()[i]][i]
                     + contribution;
-            if (newValue <= Config.MAXIMUM_PHEROMONE) {
+            if (newValue <= ProblemConfiguration.MAXIMUM_PHEROMONE) {
                 pheromoneTrails[bestAnt.getSolution()[i]][i] = newValue;
             } else {
-                pheromoneTrails[bestAnt.getSolution()[i]][i] = Config.MAXIMUM_PHEROMONE;
+                pheromoneTrails[bestAnt.getSolution()[i]][i] = ProblemConfiguration.MAXIMUM_PHEROMONE;
             }
         }
     }
@@ -154,10 +184,10 @@ public class ACOFlowShop {
             System.out.println("Original Solution > Makespan: "
                     + ant.getSolutionMakespan(graph) + ", Schedule: "
                     + ant.getSolutionAsString());
-            ant.improveSolution(graph);
-            System.out.println("After Local Search > Makespan: "
-                    + ant.getSolutionMakespan(graph) + ", Schedule: "
-                    + ant.getSolutionAsString());
+            /*ant.improveSolution(graph);
+			System.out.println("After Local Search > Makespan: "
+					+ ant.getSolutionMakespan(graph) + ", Schedule: "
+					+ ant.getSolutionAsString());*/
             antCounter++;
         }
     }
@@ -203,9 +233,52 @@ public class ACOFlowShop {
             bestScheduleMakespan = bestAnt.getSolutionMakespan(graph);
             bestScheduleAsString = bestAnt.getSolutionAsString();
         }
-
         System.out.println("Best solution so far > Makespan: "
                 + bestScheduleMakespan + ", Schedule: " + bestScheduleAsString);
     }
 
+    /**
+     * Reads a text file and returns a problem matrix.
+     *
+     * @param path File to read.
+     * @return Problem matrix.
+     * @throws IOException
+     */
+    public static double[][] getProblemGraphFromFile(String path)
+            throws IOException {
+        double graph[][] = null;
+        FileReader fr = new FileReader(path);
+        BufferedReader buf = new BufferedReader(fr);
+        String line;
+        int i = 0;
+
+        while ((line = buf.readLine()) != null) {
+            if (i > 0) {
+                String splitA[] = line.split(" ");
+                LinkedList<String> split = new LinkedList<String>();
+                for (String s : splitA) {
+                    if (!s.isEmpty()) {
+                        split.add(s);
+                    }
+                }
+                int j = 0;
+                for (String s : split) {
+                    if (!s.isEmpty()) {
+                        graph[i - 1][j++] = Integer.parseInt(s);
+                    }
+                }
+            } else {
+                String firstLine[] = line.split(" ");
+                String numberOfJobs = firstLine[0];
+                String numberOfMachines = firstLine[1];
+
+                if (graph == null) {
+                    graph = new double[Integer.parseInt(numberOfJobs)][Integer
+                            .parseInt(numberOfMachines)];
+                }
+            }
+            i++;
+        }
+        return graph;
+    }
 }

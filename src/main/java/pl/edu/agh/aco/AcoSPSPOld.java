@@ -10,7 +10,7 @@ public class AcoSPSPOld {
     private int[][] taskDependencyMatrix;
     private int[][] result;
 
-    private void init(){
+    private void init() {
         this.tasksDurationMatrix = new int[tasks];
         this.skillsEmployeesMatrix = new int[skills][employees];
         this.taskDependencyMatrix = new int[tasks][tasks];

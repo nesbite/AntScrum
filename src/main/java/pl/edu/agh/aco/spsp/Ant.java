@@ -6,6 +6,9 @@ import java.util.Random;
 
 /**
  * An Ant that belongs to Colony in the context of ACO.
+ *
+ * @author Carlos G. Gavidia (cgavidia@acm.org)
+ * @author Adrián Pareja (adrian@pareja.com)
  */
 public class Ant {
 
@@ -46,7 +49,7 @@ public class Ant {
      * @param graph  Problem graph.
      * @return Next node to move.
      */
-    public int selectNextNode(double[][] trails, double[] graph) {
+    public int selectNextNode(double[][] trails, double[][] graph) {
         int nextNode = 0;
         Random random = new Random();
         double randomValue = random.nextDouble();
@@ -151,7 +154,7 @@ public class Ant {
      * @param graph Problem graph.
      * @return Makespan of the solution.
      */
-    public double getSolutionMakespan(double[] graph) {
+    public double getSolutionMakespan(double[][] graph) {
         return FlowShopUtils.getScheduleMakespan(solution, graph);
     }
 
@@ -160,7 +163,7 @@ public class Ant {
      *
      * @param graph Problem graph.
      */
-    public void improveSolution(double[] graph) {
+    public void improveSolution(double[][] graph) {
         double makespan = getSolutionMakespan(graph);
 
         int[] localSolutionJobs = new int[solution.length];
@@ -200,7 +203,6 @@ public class Ant {
                     lessMakespan = false;
                 } else {
                     localSolution.remove(indexJ);
-
                 }
 
                 indexJ++;
@@ -222,7 +224,7 @@ public class Ant {
     /**
      * Gets th solution built as a String.
      *
-     * 2@return Solution as a String.
+     * @return Solution as a String.
      */
     public String getSolutionAsString() {
         String solutionString = new String();
