@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Random;
 
 /**
  * Appies the MAX-MIN Ant System algorithm to Flow-Shop Problem instance.
@@ -18,6 +19,7 @@ import java.util.LinkedList;
  */
 public class ACOFlowShop {
 
+    private final int numberOfMachines;
     private double[][] graph;
     private double pheromoneTrails[][] = null;
     private Ant antColony[] = null;
@@ -28,12 +30,13 @@ public class ACOFlowShop {
     public int[] bestTour;
     String bestScheduleAsString = "";
     public double bestScheduleMakespan = -1.0;
+    private Random random = new Random();
 
     public ACOFlowShop(double[][] graph) {
         this.numberOfJobs = graph.length;
         System.out.println("Number of Jobs: " + numberOfJobs);
 
-        int numberOfMachines = graph[0].length;
+        numberOfMachines = graph[0].length;
         for (int i = 1; i < numberOfJobs; i++) {
             if (graph[i].length != numberOfMachines) {
                 throw new RuntimeException("The input file is incorrect");
@@ -179,7 +182,7 @@ public class ACOFlowShop {
             System.out.println("Current ant: " + antCounter);
             while (ant.getCurrentIndex() < numberOfJobs) {
                 int nextNode = ant.selectNextNode(pheromoneTrails, graph);
-                ant.visitNode(nextNode);
+                ant.visitNode(nextNode, getRandomEmployeeId());
             }
             System.out.println("Original Solution > Makespan: "
                     + ant.getSolutionMakespan(graph) + ", Schedule: "
@@ -190,6 +193,10 @@ public class ACOFlowShop {
 					+ ant.getSolutionAsString());*/
             antCounter++;
         }
+    }
+
+    private int getRandomEmployeeId() {
+        return random.nextInt(numberOfMachines);
     }
 
     /**
