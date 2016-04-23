@@ -62,7 +62,7 @@ public class DrawChart extends Application {
         while ((line = buf.readLine()) != null) {
             if(i>0) {
 
-                String splitA[] = line.split(" ");
+                String splitA[] = line.split(ProblemConfiguration.DELIMITER);
                 int j = 0;
                 for (String s : splitA) {
                     if (!s.isEmpty()) {
@@ -72,7 +72,7 @@ public class DrawChart extends Application {
                 }
                 i++;
             } else {
-                String firstLine[] = line.split(" ");
+                String firstLine[] = line.split(ProblemConfiguration.DELIMITER);
                 numberOfEmployees = Integer.parseInt(firstLine[0]);
                 maxNumberOfTasks = Integer.parseInt(firstLine[1]);
                 solution = new int[numberOfEmployees][maxNumberOfTasks];

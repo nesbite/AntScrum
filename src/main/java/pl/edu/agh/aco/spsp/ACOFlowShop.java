@@ -206,10 +206,10 @@ public class ACOFlowShop {
             System.out.println("Original Solution > Makespan: "
                     + ant.getSolutionMakespan(graph) + ", Schedule: "
                     + ant.getSolutionAsString());
-            ant.improveSolution(graph);
-			System.out.println("After Local Search > Makespan: "
-					+ ant.getSolutionMakespan(graph) + ", Schedule: "
-					+ ant.getSolutionAsString());
+//            ant.improveSolution(graph);
+//			System.out.println("After Local Search > Makespan: "
+//					+ ant.getSolutionMakespan(graph) + ", Schedule: "
+//					+ ant.getSolutionAsString());
             antCounter++;
         }
     }
@@ -257,7 +257,7 @@ public class ACOFlowShop {
 
         while ((line = buf.readLine()) != null) {
             if (i > 0) {
-                String splitA[] = line.split(" ");
+                String splitA[] = line.split(ProblemConfiguration.DELIMITER);
                 LinkedList<String> split = new LinkedList<String>();
                 for (String s : splitA) {
                     if (!s.isEmpty()) {
@@ -271,7 +271,7 @@ public class ACOFlowShop {
                     }
                 }
             } else {
-                String firstLine[] = line.split(" ");
+                String firstLine[] = line.split(ProblemConfiguration.DELIMITER);
                 String numberOfJobs = firstLine[0];
                 String numberOfMachines = firstLine[1];
 
@@ -293,13 +293,13 @@ public class ACOFlowShop {
         int result[][] = getSolutionAsArray();
 
         List<String> list = new ArrayList<>();
-        list.add(result.length + " " + result[0].length);
+        list.add(result.length + ProblemConfiguration.DELIMITER + result[0].length);
         Files.write(file, list, Charset.forName("UTF-8"));
         String line="";
         for (int i = 0; i < result.length; i++){
             for (int j = 0; j < result[i].length; j++) {
                 if(result[i][j] != -1){
-                    line += result[i][j] + " ";
+                    line += result[i][j] + ProblemConfiguration.DELIMITER;
                 }
             }
             list.add(line);

@@ -34,7 +34,7 @@ public class Ant {
         Random random = new Random();
         double randomValue = random.nextDouble();
         // Probability Setting from Paper
-        double bestChoiceProbability = ((double) graph.length - 4)
+        double bestChoiceProbability = ((double) 1)
                 / graph.length;
         if (randomValue < bestChoiceProbability) {
             double currentMaximumFeromone = -1;
