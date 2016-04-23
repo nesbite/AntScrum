@@ -1,15 +1,18 @@
 package pl.edu.agh.aco.spsp;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
 import pl.edu.agh.aco.spsp.config.ProblemConfiguration;
+import pl.edu.agh.aco.spsp.view.DrawChart;
 import pl.edu.agh.aco.spsp.view.SchedulingFrame;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Random;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * Appies the MAX-MIN Ant System algorithm to Flow-Shop Problem instance.
@@ -30,24 +33,24 @@ public class ACOFlowShop {
     String bestScheduleAsString = "";
     public double bestScheduleMakespan = -1.0;
     private Random random = new Random();
-    private int amountOfEmployees;
+    private int numberOfEmployees;
 
     public ACOFlowShop(double[][] graph) {
         this.numberOfJobs = graph.length;
         System.out.println("Number of Jobs: " + numberOfJobs);
 
-        int numberOfMachines = amountOfEmployees = graph[0].length;
+        numberOfEmployees = graph[0].length;
         for (int i = 1; i < numberOfJobs; i++) {
-            if (graph[i].length != numberOfMachines) {
+            if (graph[i].length != numberOfEmployees) {
                 throw new RuntimeException("The input file is incorrect");
             }
         }
-        System.out.println("Number of Machines: " + numberOfMachines);
+        System.out.println("Number of Machines: " + numberOfEmployees);
 
         this.numberOfAnts = ProblemConfiguration.NUMBER_OF_ANTS;
         System.out.println("Number of Ants in Colony: " + numberOfAnts);
         this.graph = graph;
-        this.pheromoneTrails = new double[numberOfJobs][numberOfJobs];
+        this.pheromoneTrails = new double[numberOfEmployees][numberOfJobs];
         this.antColony = new Ant[numberOfAnts];
         for (int j = 0; j < antColony.length; j++) {
             antColony[j] = new Ant(numberOfJobs);
@@ -70,7 +73,8 @@ public class ACOFlowShop {
             System.out.println("Finishing computation at: " + new Date());
             System.out.println("Duration (in seconds): "
                     + ((double) (endTime - startTime) / 1000000000.0));
-            acoFlowShop.showSolution();
+//            acoFlowShop.showSolution();
+            acoFlowShop.saveResultToFile(ProblemConfiguration.FILE_SOLUTION);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,21 +98,41 @@ public class ACOFlowShop {
                 frame.setProblemGraph(graph);
                 frame.setSolution(bestTour);
                 frame.setVisible(true);
-
             }
         });
     }
 
-    /**
-     * Solves a Flow-Shop instance using Ant Colony Optimization.
-     *
-     * @return Array representing a solution.
-     */
+    private int[][] getSolutionAsArray(){
+        int max=0;
+        int employee[] = new int[numberOfEmployees];
+        int employee2[] = new int[numberOfEmployees];
+
+        for (int i=0;i<bestTour.length;i++) {
+            employee[bestTour[i]]++;
+        }
+
+        for (int i : employee) {
+            if(i>max)
+                max = i;
+        }
+        int[][] result = new int[numberOfEmployees][max];
+        for(int i=0;i<numberOfEmployees;i++){
+            for (int j=0;j<max;j++){
+                result[i][j] = -1;
+            }
+        }
+        for (int i=0;i<bestTour.length;i++){
+            result[bestTour[i]][employee2[bestTour[i]]++] = i;
+        }
+
+        return result;
+    }
+
     public int[] solveProblem() {
         System.out.println("INITIALIZING PHEROMONE MATRIX");
         double initialPheromoneValue = ProblemConfiguration.MAXIMUM_PHEROMONE;
         System.out.println("Initial pheromone value: " + initialPheromoneValue);
-        for (int i = 0; i < numberOfJobs; i++) {
+        for (int i = 0; i < numberOfEmployees; i++) {
             for (int j = 0; j < numberOfJobs; j++) {
                 pheromoneTrails[i][j] = initialPheromoneValue;
             }
@@ -133,9 +157,7 @@ public class ACOFlowShop {
         return bestTour.clone();
     }
 
-    /**
-     * Updates pheromone trail values
-     */
+
     private void updatePheromoneTrails() {
         System.out.println("UPDATING PHEROMONE TRAILS");
 
@@ -143,7 +165,7 @@ public class ACOFlowShop {
         System.out.println("Evaporation ratio: "
                 + ProblemConfiguration.EVAPORATION);
 
-        for (int i = 0; i < numberOfJobs; i++) {
+        for (int i = 0; i < numberOfEmployees; i++) {
             for (int j = 0; j < numberOfJobs; j++) {
                 double newValue = pheromoneTrails[i][j]
                         * ProblemConfiguration.EVAPORATION;
@@ -172,9 +194,6 @@ public class ACOFlowShop {
         }
     }
 
-    /**
-     * Build a solution for every Ant in the Colony.
-     */
     private void buildSolutions() {
         System.out.println("BUILDING ANT SOLUTIONS");
         int antCounter = 0;
@@ -182,22 +201,19 @@ public class ACOFlowShop {
             System.out.println("Current ant: " + antCounter);
             while (ant.getCurrentIndex() < numberOfJobs) {
                 int nextNode = ant.selectNextNode(pheromoneTrails, graph);
-                ant.visitNode(nextNode, getRandomEmployeeId());
+                ant.visitNode(nextNode);
             }
             System.out.println("Original Solution > Makespan: "
                     + ant.getSolutionMakespan(graph) + ", Schedule: "
                     + ant.getSolutionAsString());
-            /*ant.improveSolution(graph);
+            ant.improveSolution(graph);
 			System.out.println("After Local Search > Makespan: "
 					+ ant.getSolutionMakespan(graph) + ", Schedule: "
-					+ ant.getSolutionAsString());*/
+					+ ant.getSolutionAsString());
             antCounter++;
         }
     }
 
-    /**
-     * Clears solution build for every Ant in the colony.
-     */
     private void clearAntSolutions() {
         System.out.println("CLEARING ANT SOLUTIONS");
         for (Ant ant : antColony) {
@@ -206,11 +222,6 @@ public class ACOFlowShop {
         }
     }
 
-    /**
-     * Returns the best performing Ant in Colony
-     *
-     * @return The Best Ant
-     */
     private Ant getBestAnt() {
         Ant bestAnt = antColony[0];
         for (Ant ant : antColony) {
@@ -222,11 +233,6 @@ public class ACOFlowShop {
         return bestAnt;
     }
 
-    /**
-     * Selects the best solution found so far.
-     *
-     * @return
-     */
     private void updateBestSolution() {
         System.out.println("GETTING BEST SOLUTION FOUND");
         Ant bestAnt = getBestAnt();
@@ -240,13 +246,7 @@ public class ACOFlowShop {
                 + bestScheduleMakespan + ", Schedule: " + bestScheduleAsString);
     }
 
-    /**
-     * Reads a text file and returns a problem matrix.
-     *
-     * @param path File to read.
-     * @return Problem matrix.
-     * @throws IOException
-     */
+
     public static double[][] getProblemGraphFromFile(String path)
             throws IOException {
         double graph[][] = null;
@@ -285,7 +285,29 @@ public class ACOFlowShop {
         return graph;
     }
 
-    public int getRandomEmployeeId() {
-        return random.nextInt(amountOfEmployees);
+    public void saveResultToFile(String path) throws IOException {
+
+        Path file = Paths.get(ProblemConfiguration.FILE_SOLUTION);
+        FileWriter fw = new FileWriter(path);
+        BufferedWriter buf = new BufferedWriter(fw);
+        int result[][] = getSolutionAsArray();
+
+        List<String> list = new ArrayList<>();
+        list.add(result.length + " " + result[0].length);
+        Files.write(file, list, Charset.forName("UTF-8"));
+        String line="";
+        for (int i = 0; i < result.length; i++){
+            for (int j = 0; j < result[i].length; j++) {
+                if(result[i][j] != -1){
+                    line += result[i][j] + " ";
+                }
+            }
+            list.add(line);
+            Files.write(file, list, Charset.forName("UTF-8"));
+            line="";
+        }
     }
+
+
+
 }

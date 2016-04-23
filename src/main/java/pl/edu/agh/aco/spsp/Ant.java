@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * An Ant that belongs to Colony in the context of ACO.
- *
- * @author Carlos G. Gavidia (cgavidia@acm.org)
- * @author Adrián Pareja (adrian@pareja.com)
- */
+
 public class Ant {
 
     private int currentIndex = 0;
@@ -21,34 +16,19 @@ public class Ant {
         this.visited = new boolean[graphLenght];
     }
 
-    /**
-     * Mark a node as visited.
-     *
-     * @param visitedNode Visited node.
-     */
-    public void visitNode(int visitedNode, int employeeId) {
-        solution[currentIndex] = employeeId;
-        visited[visitedNode] = true;
+
+    public void visitNode(int visitedNode) {
+        solution[currentIndex] = visitedNode;
+        visited[currentIndex] = true;
         currentIndex++;
     }
 
-    /**
-     * Verifies if a node is visited.
-     *
-     * @param node Node to verify.
-     * @return True if the node is already visited. False otherwise.
-     */
+
     public boolean isNodeVisited(int node) {
         return visited[node];
     }
 
-    /**
-     * Selects the next node to move while building a solution,
-     *
-     * @param trails Pheromone matrix.
-     * @param graph  Problem graph.
-     * @return Next node to move.
-     */
+
     public int selectNextNode(double[][] trails, double[][] graph) {
         int nextNode = 0;
         Random random = new Random();
@@ -58,9 +38,9 @@ public class Ant {
                 / graph.length;
         if (randomValue < bestChoiceProbability) {
             double currentMaximumFeromone = -1;
-            for (int i = 0; i < graph.length; i++) {
+            for (int i = 0; i < graph[0].length; i++) {
                 double currentFeromone = trails[i][currentIndex];
-                if (!isNodeVisited(i)
+                if (!isNodeVisited(currentIndex)
                         && currentFeromone > currentMaximumFeromone) {
                     nextNode = i;
                     currentMaximumFeromone = currentFeromone;
@@ -71,7 +51,7 @@ public class Ant {
             double probabilities[] = getProbabilities(trails);
             double r = randomValue;
             double total = 0;
-            for (int i = 0; i < graph.length; i++) {
+            for (int i = 0; i < graph[0].length; i++) {
                 total += probabilities[i];
                 if (total >= r) {
                     nextNode = i;
@@ -82,35 +62,24 @@ public class Ant {
         return nextNode;
     }
 
-    /**
-     * Gets solution build as an int array.
-     *
-     * @return Ant's solution.
-     */
+
     public int[] getSolution() {
         return solution;
     }
 
-    /**
-     * Gets a probabilities vector, containing probabilities to move to each
-     * node according to pheromone matrix.
-     *
-     * @param trails Pheromone matrix.
-     * @return Probabilities vector.
-     */
     private double[] getProbabilities(double[][] trails) {
-        double probabilities[] = new double[solution.length];
+        double probabilities[] = new double[trails.length];
 
         double denom = 0.0;
         for (int l = 0; l < trails.length; l++) {
-            if (!isNodeVisited(l)) {
+            if (!isNodeVisited(currentIndex)) {
                 denom += trails[l][currentIndex];
 
             }
         }
 
-        for (int j = 0; j < solution.length; j++) {
-            if (isNodeVisited(j)) {
+        for (int j = 0; j < trails.length; j++) {
+            if (isNodeVisited(currentIndex)) {
                 probabilities[j] = 0.0;
             } else {
                 double numerator = trails[j][currentIndex];
@@ -120,9 +89,7 @@ public class Ant {
         return probabilities;
     }
 
-    /**
-     * Resets the visited vector.
-     */
+
     public void clear() {
         for (int i = 0; i < visited.length; i++) {
             visited[i] = false;
@@ -130,39 +97,21 @@ public class Ant {
         }
     }
 
-    /**
-     * Sets the current index for the Ant.
-     *
-     * @param currentIndex Current index.
-     */
+
     public void setCurrentIndex(int currentIndex) {
         this.currentIndex = currentIndex;
     }
 
-    /**
-     * Gets the current index for the Ant.
-     *
-     * @return Current index.
-     */
+
     public int getCurrentIndex() {
         return currentIndex;
     }
 
-    /**
-     * Gets the makespan of the Ants built solution.
-     *
-     * @param graph Problem graph.
-     * @return Makespan of the solution.
-     */
+
     public double getSolutionMakespan(double[][] graph) {
         return FlowShopUtils.getScheduleMakespan(solution, graph, graph[0].length);
     }
 
-    /**
-     * Applies local search to the solution built.
-     *
-     * @param graph Problem graph.
-     */
     public void improveSolution(double[][] graph) {
         double makespan = getSolutionMakespan(graph);
 
@@ -221,11 +170,7 @@ public class Ant {
         solution = localSolutionJobs;
     }
 
-    /**
-     * Gets th solution built as a String.
-     *
-     * @return Solution as a String.
-     */
+
     public String getSolutionAsString() {
         String solutionString = new String();
         for (int i = 0; i < solution.length; i++) {
