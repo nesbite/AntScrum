@@ -8,7 +8,7 @@ package pl.edu.agh.aco.spsp.config;
  */
 public class ProblemConfiguration {
 
-    public static final String FILE_DATASET = "data/flowshop.data";
+    public static final String FILE_DATASET = "data/simple_problem.data";
 
     public static final int NUMBER_OF_ANTS = 1;
     public static final double ALPHA = 1;

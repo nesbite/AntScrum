@@ -26,8 +26,8 @@ public class Ant {
      *
      * @param visitedNode Visited node.
      */
-    public void visitNode(int visitedNode) {
-        solution[currentIndex] = visitedNode;
+    public void visitNode(int visitedNode, int employeeId) {
+        solution[currentIndex] = employeeId;
         visited[visitedNode] = true;
         currentIndex++;
     }
