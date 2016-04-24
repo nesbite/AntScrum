@@ -1,5 +1,7 @@
 package pl.edu.agh.aco.spsp;
 
+import pl.edu.agh.aco.spsp.config.ProblemConfiguration;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,7 +38,7 @@ public class Ant {
         Random random = new Random();
         double randomValue = random.nextDouble();
         // Probability Setting from Paper
-        double bestChoiceProbability = ((double) 1)
+        double bestChoiceProbability = ((double) ProblemConfiguration.PROBABILITY)
                 / graph.length;
         if (randomValue < bestChoiceProbability) {
             double currentMaximumFeromone = -1;
