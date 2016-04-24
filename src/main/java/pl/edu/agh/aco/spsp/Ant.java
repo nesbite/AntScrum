@@ -8,6 +8,7 @@ import java.util.Random;
 public class Ant {
 
     private int currentIndex = 0;
+    private int lastEmployee = -1;
     private int solution[];
     public boolean visited[];
 
@@ -21,6 +22,7 @@ public class Ant {
         solution[currentIndex] = visitedNode;
         visited[currentIndex] = true;
         currentIndex++;
+        lastEmployee = visitedNode;
     }
 
 
@@ -29,7 +31,7 @@ public class Ant {
     }
 
 
-    public int selectNextNode(double[][] trails, double[][] graph) {
+    public int selectNextNode(double[][][] trails, double[][] graph) {
         int nextNode = 0;
         Random random = new Random();
         double randomValue = random.nextDouble();
@@ -39,12 +41,25 @@ public class Ant {
         if (randomValue < bestChoiceProbability) {
             double currentMaximumFeromone = -1;
             for (int i = 0; i < graph[0].length; i++) {
-                double currentFeromone = trails[i][currentIndex];
-                if (!isNodeVisited(currentIndex)
-                        && currentFeromone > currentMaximumFeromone) {
-                    nextNode = i;
-                    currentMaximumFeromone = currentFeromone;
+                double currentFeromone=0;
+                if(lastEmployee == -1){
+                    for(int j=0;j<graph[0].length;j++){
+                        currentFeromone = trails[j][i][currentIndex];
+                        if (!isNodeVisited(currentIndex)
+                                && currentFeromone > currentMaximumFeromone) {
+                            nextNode = i;
+                            currentMaximumFeromone = currentFeromone;
+                        }
+                    }
+                } else {
+                     currentFeromone = trails[lastEmployee][i][currentIndex];
+                    if (!isNodeVisited(currentIndex)
+                            && currentFeromone > currentMaximumFeromone) {
+                        nextNode = i;
+                        currentMaximumFeromone = currentFeromone;
+                    }
                 }
+
             }
             return nextNode;
         } else {
@@ -67,22 +82,22 @@ public class Ant {
         return solution;
     }
 
-    private double[] getProbabilities(double[][] trails) {
+    private double[] getProbabilities(double[][][] trails) {
         double probabilities[] = new double[trails.length];
-
+        int employee = (lastEmployee == -1) ? 0 : lastEmployee;
         double denom = 0.0;
         for (int l = 0; l < trails.length; l++) {
             if (!isNodeVisited(currentIndex)) {
-                denom += trails[l][currentIndex];
-
+                denom += trails[employee][l][currentIndex];
             }
+
         }
 
         for (int j = 0; j < trails.length; j++) {
             if (isNodeVisited(currentIndex)) {
                 probabilities[j] = 0.0;
             } else {
-                double numerator = trails[j][currentIndex];
+                double numerator = trails[employee][j][currentIndex];
                 probabilities[j] = numerator / denom;
             }
         }

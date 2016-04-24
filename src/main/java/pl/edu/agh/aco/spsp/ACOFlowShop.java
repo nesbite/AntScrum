@@ -1,9 +1,7 @@
 package pl.edu.agh.aco.spsp;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
+
 import pl.edu.agh.aco.spsp.config.ProblemConfiguration;
-import pl.edu.agh.aco.spsp.view.DrawChart;
 import pl.edu.agh.aco.spsp.view.SchedulingFrame;
 
 import javax.swing.*;
@@ -14,16 +12,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-/**
- * Appies the MAX-MIN Ant System algorithm to Flow-Shop Problem instance.
- *
- * @author Carlos G. Gavidia (cgavidia@acm.org)
- * @author Adrián Pareja (adrian@pareja.com)
- */
+
 public class ACOFlowShop {
 
     private double[][] graph;
-    private double pheromoneTrails[][] = null;
+    private double pheromoneTrails[][][] = null;
     private Ant antColony[] = null;
 
     private int numberOfJobs;
@@ -50,7 +43,7 @@ public class ACOFlowShop {
         this.numberOfAnts = ProblemConfiguration.NUMBER_OF_ANTS;
         System.out.println("Number of Ants in Colony: " + numberOfAnts);
         this.graph = graph;
-        this.pheromoneTrails = new double[numberOfEmployees][numberOfJobs];
+        this.pheromoneTrails = new double[numberOfEmployees][numberOfEmployees][numberOfJobs];
         this.antColony = new Ant[numberOfAnts];
         for (int j = 0; j < antColony.length; j++) {
             antColony[j] = new Ant(numberOfJobs);
@@ -132,9 +125,11 @@ public class ACOFlowShop {
         System.out.println("INITIALIZING PHEROMONE MATRIX");
         double initialPheromoneValue = ProblemConfiguration.MAXIMUM_PHEROMONE;
         System.out.println("Initial pheromone value: " + initialPheromoneValue);
-        for (int i = 0; i < numberOfEmployees; i++) {
-            for (int j = 0; j < numberOfJobs; j++) {
-                pheromoneTrails[i][j] = initialPheromoneValue;
+        for (int h = 0; h < numberOfEmployees; h++) {
+            for (int i = 0; i < numberOfEmployees; i++) {
+                for (int j = 0; j < numberOfJobs; j++) {
+                    pheromoneTrails[h][i][j] = initialPheromoneValue;
+                }
             }
         }
 
@@ -164,15 +159,16 @@ public class ACOFlowShop {
         System.out.println("Performing evaporation on all edges");
         System.out.println("Evaporation ratio: "
                 + ProblemConfiguration.EVAPORATION);
-
-        for (int i = 0; i < numberOfEmployees; i++) {
-            for (int j = 0; j < numberOfJobs; j++) {
-                double newValue = pheromoneTrails[i][j]
-                        * ProblemConfiguration.EVAPORATION;
-                if (newValue >= ProblemConfiguration.MINIMUM_PHEROMONE) {
-                    pheromoneTrails[i][j] = newValue;
-                } else {
-                    pheromoneTrails[i][j] = ProblemConfiguration.MINIMUM_PHEROMONE;
+        for (int h = 0; h < numberOfEmployees; h++) {
+            for (int i = 0; i < numberOfEmployees; i++) {
+                for (int j = 0; j < numberOfJobs; j++) {
+                    double newValue = pheromoneTrails[h][i][j]
+                            * ProblemConfiguration.EVAPORATION;
+                    if (newValue >= ProblemConfiguration.MINIMUM_PHEROMONE) {
+                        pheromoneTrails[h][i][j] = newValue;
+                    } else {
+                        pheromoneTrails[h][i][j] = ProblemConfiguration.MINIMUM_PHEROMONE;
+                    }
                 }
             }
         }
@@ -184,12 +180,18 @@ public class ACOFlowShop {
         System.out.println("Contibution for best ant: " + contribution);
 
         for (int i = 0; i < numberOfJobs; i++) {
-            double newValue = pheromoneTrails[bestAnt.getSolution()[i]][i]
+            int index;
+            if(i == 0){
+                index = 0;
+            } else {
+                index = bestAnt.getSolution()[i-1];
+            }
+            double newValue = pheromoneTrails[index][bestAnt.getSolution()[i]][i]
                     + contribution;
             if (newValue <= ProblemConfiguration.MAXIMUM_PHEROMONE) {
-                pheromoneTrails[bestAnt.getSolution()[i]][i] = newValue;
+                pheromoneTrails[index][bestAnt.getSolution()[i]][i] = newValue;
             } else {
-                pheromoneTrails[bestAnt.getSolution()[i]][i] = ProblemConfiguration.MAXIMUM_PHEROMONE;
+                pheromoneTrails[index][bestAnt.getSolution()[i]][i] = ProblemConfiguration.MAXIMUM_PHEROMONE;
             }
         }
     }
@@ -206,10 +208,10 @@ public class ACOFlowShop {
             System.out.println("Original Solution > Makespan: "
                     + ant.getSolutionMakespan(graph) + ", Schedule: "
                     + ant.getSolutionAsString());
-//            ant.improveSolution(graph);
-//			System.out.println("After Local Search > Makespan: "
-//					+ ant.getSolutionMakespan(graph) + ", Schedule: "
-//					+ ant.getSolutionAsString());
+            ant.improveSolution(graph);
+			System.out.println("After Local Search > Makespan: "
+					+ ant.getSolutionMakespan(graph) + ", Schedule: "
+					+ ant.getSolutionAsString());
             antCounter++;
         }
     }
