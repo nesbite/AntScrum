@@ -27,8 +27,13 @@ public class ACOFlowShop {
     public double bestScheduleMakespan = -1.0;
     private Random random = new Random();
     private int numberOfEmployees;
+    private double duration = 0;
+    private String solutionFile = "";
+    private String dataFileName = "";
 
-    public ACOFlowShop(double[][] graph) {
+    public ACOFlowShop(String dataFileName) throws IOException {
+        this.dataFileName = dataFileName;
+        this.graph = getProblemGraphFromFile(ProblemConfiguration.DATASET_DIR + dataFileName + ".csv");
         this.numberOfJobs = graph.length;
         System.out.println("Number of Jobs: " + numberOfJobs);
 
@@ -42,7 +47,7 @@ public class ACOFlowShop {
 
         this.numberOfAnts = ProblemConfiguration.NUMBER_OF_ANTS;
         System.out.println("Number of Ants in Colony: " + numberOfAnts);
-        this.graph = graph;
+
         this.pheromoneTrails = new double[numberOfEmployees][numberOfEmployees][numberOfJobs];
         this.antColony = new Ant[numberOfAnts];
         for (int j = 0; j < antColony.length; j++) {
@@ -50,50 +55,28 @@ public class ACOFlowShop {
         }
     }
 
-    public static void main(String... args) {
+    public void generateResult() {
         System.out.println("ACO FOR FLOW SHOP SCHEDULLING");
         System.out.println("=============================");
 
         try {
-            String fileDataset = ProblemConfiguration.FILE_DATASET;
+            String fileDataset = dataFileName + ".csv";
             System.out.println("Data file: " + fileDataset);
-            double[][] graph = getProblemGraphFromFile(fileDataset);
-            ACOFlowShop acoFlowShop = new ACOFlowShop(graph);
             System.out.println("Starting computation at: " + new Date());
             long startTime = System.nanoTime();
-            acoFlowShop.solveProblem();
+            solveProblem();
             long endTime = System.nanoTime();
             System.out.println("Finishing computation at: " + new Date());
+            duration = ((double) (endTime - startTime) / 1000000000.0);
             System.out.println("Duration (in seconds): "
-                    + ((double) (endTime - startTime) / 1000000000.0));
-//            acoFlowShop.showSolution();
-            acoFlowShop.saveResultToFile(ProblemConfiguration.FILE_SOLUTION);
+                    + duration);
+            saveResultToFile(ProblemConfiguration.SOLUTIONS_DIR + dataFileName, ".csv");
+            saveResultDataToFile(ProblemConfiguration.SOLUTIONS_DATA_DIR + dataFileName + ".csv");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void showSolution() throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException,
-            UnsupportedLookAndFeelException {
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager
-                .getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
-            }
-        }
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                SchedulingFrame frame = new SchedulingFrame();
-                frame.setSolutionMakespan(bestScheduleMakespan);
-                frame.setProblemGraph(graph);
-                frame.setSolution(bestTour);
-                frame.setVisible(true);
-            }
-        });
-    }
 
     private int[][] getSolutionAsArray(){
         int max=0;
@@ -287,16 +270,29 @@ public class ACOFlowShop {
         return graph;
     }
 
-    public void saveResultToFile(String path) throws IOException {
+    private File createFile(String name, int count, String ext) throws IOException {
+        File f;
 
-        Path file = Paths.get(ProblemConfiguration.FILE_SOLUTION);
-        FileWriter fw = new FileWriter(path);
+        solutionFile = name+ "(" + count + ")"+ext;
+        f = new File(solutionFile);
+        if (!f.exists()) {
+            f.createNewFile();
+            return f;
+        }
+        else {
+            return createFile(name, ++count, ext);
+        }
+
+    }
+
+    public void saveResultToFile(String path, String ext) throws IOException {
+
+        File file = createFile(path, 1, ext);
+        FileWriter fw = new FileWriter(file);
         BufferedWriter buf = new BufferedWriter(fw);
         int result[][] = getSolutionAsArray();
 
-        List<String> list = new ArrayList<>();
-        list.add(result.length + ProblemConfiguration.DELIMITER + result[0].length);
-        Files.write(file, list, Charset.forName("UTF-8"));
+        buf.write(result.length + ProblemConfiguration.DELIMITER + result[0].length+"\n");
         String line="";
         for (int i = 0; i < result.length; i++){
             for (int j = 0; j < result[i].length; j++) {
@@ -304,10 +300,31 @@ public class ACOFlowShop {
                     line += result[i][j] + ProblemConfiguration.DELIMITER;
                 }
             }
-            list.add(line);
-            Files.write(file, list, Charset.forName("UTF-8"));
+            buf.write(line+"\n");
             line="";
         }
+        buf.close();
+    }
+
+    public void saveResultDataToFile(String path) throws IOException {
+
+        FileWriter fw = new FileWriter(path, true);
+        BufferedWriter buf = new BufferedWriter(fw);
+
+
+        buf.write("Best solution makespan: " + bestScheduleMakespan+"\n");
+        buf.write("Iterations: " + ProblemConfiguration.MAX_ITERATIONS+"\n");
+        buf.write("Ants: " + ProblemConfiguration.NUMBER_OF_ANTS+"\n");
+        buf.write("Probability: " + ProblemConfiguration.PROBABILITY+"\n");
+        buf.write("Evaporation: " + ProblemConfiguration.EVAPORATION+"\n");
+        buf.write("Q: " + ProblemConfiguration.Q+"\n");
+        buf.write("Maximum pheromone: " + ProblemConfiguration.MAXIMUM_PHEROMONE+"\n");
+        buf.write("Minimum pheromone: " + ProblemConfiguration.MINIMUM_PHEROMONE+"\n");
+        buf.write("Duration (in seconds): " + duration+"\n");
+        buf.write("Coresponding solution file: " + solutionFile+"\n");
+        buf.write("\n");
+        buf.close();
+
     }
 
 
