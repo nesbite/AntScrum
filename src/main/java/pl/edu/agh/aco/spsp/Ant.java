@@ -38,7 +38,7 @@ public class Ant {
         Random random = new Random();
         double randomValue = random.nextDouble();
         // Probability Setting from Paper
-        double bestChoiceProbability = ((double) ProblemConfiguration.PROBABILITY)
+        double bestChoiceProbability = ( ProblemConfiguration.PROBABILITY)
                 / graph.length;
         if (randomValue < bestChoiceProbability) {
             double currentMaximumFeromone = -1;
@@ -126,7 +126,7 @@ public class Ant {
 
 
     public double getSolutionMakespan(double[][] graph) {
-        return FlowShopUtils.getScheduleMakespan(solution, graph, graph[0].length);
+        return ScrumUtils.getScheduleMakespan(solution, graph, graph[0].length);
     }
 
     public void improveSolution(double[][] graph) {
@@ -161,7 +161,7 @@ public class Ant {
                     t++;
                 }
 
-                double newMakespan = FlowShopUtils.getScheduleMakespan(
+                double newMakespan = ScrumUtils.getScheduleMakespan(
                         intermediateSolution, graph, graph[0].length);
 
                 if (newMakespan < makespan) {

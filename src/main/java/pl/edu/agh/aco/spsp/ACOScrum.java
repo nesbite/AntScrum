@@ -2,18 +2,12 @@ package pl.edu.agh.aco.spsp;
 
 
 import pl.edu.agh.aco.spsp.config.ProblemConfiguration;
-import pl.edu.agh.aco.spsp.view.SchedulingFrame;
 
-import javax.swing.*;
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 
-public class ACOFlowShop {
+public class ACOScrum {
 
     private double[][] graph;
     private double pheromoneTrails[][][] = null;
@@ -30,8 +24,9 @@ public class ACOFlowShop {
     private double duration = 0;
     private String solutionFile = "";
     private String dataFileName = "";
+    private double currentIterationSolutionMakespan;
 
-    public ACOFlowShop(String dataFileName) throws IOException {
+    public ACOScrum(String dataFileName) throws IOException {
         this.dataFileName = dataFileName;
         this.graph = getProblemGraphFromFile(ProblemConfiguration.DATASET_DIR + dataFileName + ".csv");
         this.numberOfJobs = graph.length;
@@ -104,7 +99,7 @@ public class ACOFlowShop {
         return result;
     }
 
-    public int[] solveProblem() {
+    public int[] solveProblem() throws IOException {
         System.out.println("INITIALIZING PHEROMONE MATRIX");
         double initialPheromoneValue = ProblemConfiguration.MAXIMUM_PHEROMONE;
         System.out.println("Initial pheromone value: " + initialPheromoneValue);
@@ -120,19 +115,26 @@ public class ACOFlowShop {
         System.out.println("STARTING ITERATIONS");
         System.out.println("Number of iterations: "
                 + ProblemConfiguration.MAX_ITERATIONS);
-
+        FileWriter fw = new FileWriter("data/iterations.csv");
+        BufferedWriter buf = new BufferedWriter(fw);
         while (iteration < ProblemConfiguration.MAX_ITERATIONS) {
             System.out.println("Current iteration: " + iteration);
             clearAntSolutions();
             buildSolutions();
             updatePheromoneTrails();
             updateBestSolution();
+            saveIterationResultToFile(buf, iteration);
             iteration++;
         }
+        buf.close();
         System.out.println("EXECUTION FINISHED");
         System.out.println("Best schedule makespam: " + bestScheduleMakespan);
         System.out.println("Best schedule:" + bestScheduleAsString);
         return bestTour.clone();
+    }
+
+    private void saveIterationResultToFile(BufferedWriter buf, int iteration) throws IOException {
+        buf.write(iteration + "," + (int)currentIterationSolutionMakespan +"\n");
     }
 
 
@@ -221,6 +223,7 @@ public class ACOFlowShop {
     private void updateBestSolution() {
         System.out.println("GETTING BEST SOLUTION FOUND");
         Ant bestAnt = getBestAnt();
+        currentIterationSolutionMakespan = bestAnt.getSolutionMakespan(graph);
         if (bestTour == null
                 || bestScheduleMakespan > bestAnt.getSolutionMakespan(graph)) {
             bestTour = bestAnt.getSolution().clone();

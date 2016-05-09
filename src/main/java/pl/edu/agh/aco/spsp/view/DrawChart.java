@@ -2,7 +2,6 @@ package pl.edu.agh.aco.spsp.view;
 
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -11,12 +10,11 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
-import pl.edu.agh.aco.spsp.ACOFlowShop;
+import pl.edu.agh.aco.spsp.ACOScrum;
 import pl.edu.agh.aco.spsp.config.ProblemConfiguration;
 
 import javax.imageio.ImageIO;
@@ -45,17 +43,17 @@ public class DrawChart extends Application {
 
         File folder = new File(ProblemConfiguration.SOLUTIONS_DIR);
 //        File[] listOfFiles = folder.listFiles();
-        File[] listOfFiles = new File[] {new File("data/solutions/solution/100x10(1).csv")};
+        File[] listOfFiles = new File[] {new File("data/solutions/solution/500x20(8).csv")};
         for (int f = 0; f < listOfFiles.length; f++) {
             if (listOfFiles[f].isFile()) {
-                fileName = listOfFiles[f].getName().substring(0, listOfFiles[f].getName().length()-4);
+                fileName = listOfFiles[f].getName().substring(0, listOfFiles[f].getName().indexOf("."));
                 System.out.printf(fileName);
             } else {
                 continue;
             }
 
         try {
-            graph = ACOFlowShop.getProblemGraphFromFile(ProblemConfiguration.DATASET_DIR + fileName.substring(0,fileName.length()-3) + ".csv");
+            graph = ACOScrum.getProblemGraphFromFile(ProblemConfiguration.DATASET_DIR + fileName.substring(0,fileName.indexOf("(")) + ".csv");
             solution = getSolutionFromFile(ProblemConfiguration.SOLUTIONS_DIR + fileName + ".csv");
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,7 +83,7 @@ public class DrawChart extends Application {
         stage.show();
 
         saveSnapshot(sbc);
-
+//        stage.close();
         }
 
     }

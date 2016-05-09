@@ -1,6 +1,6 @@
 package pl.edu.agh.aco.spsp;
 
-public class FlowShopUtils {
+public class ScrumUtils {
 
     public static double getScheduleMakespan(int[] solution, double[][] graph, int employees) {
 
