@@ -1,2 +1,2 @@
 # AntScrum
-ACO algorithm for Scrum taksks allocation - Lukasz Gajewski, Grzegorz Siatka, Patrycja Wrona
+ACO algorithm for Scrum tasks allocation problem - Lukasz Gajewski, Grzegorz Siatka, Patrycja Wrona
