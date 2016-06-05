@@ -1,0 +1,66 @@
+Best solution makespan: 77.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 3.148934395
+Coresponding solution file: data/solutions/solution/100x40(1).csv
+
+Best solution makespan: 85.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 3.361113522
+Coresponding solution file: data/solutions/solution/100x40(2).csv
+
+Best solution makespan: 84.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 3.037117705
+Coresponding solution file: data/solutions/solution/100x40(3).csv
+
+Best solution makespan: 83.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 2.945350664
+Coresponding solution file: data/solutions/solution/100x40(4).csv
+
+Best solution makespan: 88.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 2.937414283
+Coresponding solution file: data/solutions/solution/100x40(5).csv
+
+Best solution makespan: 86.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 4.889434193
+Coresponding solution file: data/solutions/solution/100x40(6).csv
+

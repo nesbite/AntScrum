@@ -65,7 +65,8 @@ public class ACOScrum {
             duration = ((double) (endTime - startTime) / 1000000000.0);
             System.out.println("Duration (in seconds): "
                     + duration);
-            saveResultToFile(ProblemConfiguration.SOLUTIONS_DIR + dataFileName, ".csv");
+//            saveResultToFile(ProblemConfiguration.SOLUTIONS_DIR + dataFileName, ".csv");
+            saveResultToFile(ProblemConfiguration.SOLUTIONS_DIR + "solution", ".csv");
             saveResultDataToFile(ProblemConfiguration.SOLUTIONS_DATA_DIR + dataFileName + ".csv");
         } catch (Exception e) {
             e.printStackTrace();
@@ -276,14 +277,17 @@ public class ACOScrum {
     private File createFile(String name, int count, String ext) throws IOException {
         File f;
 
-        solutionFile = name+ "(" + count + ")"+ext;
+//        solutionFile = name+ "(" + count + ")"+ext;
+        solutionFile = ProblemConfiguration.SOLUTIONS_DIR + "solution" + ext;
+        System.out.println(solutionFile);
         f = new File(solutionFile);
         if (!f.exists()) {
             f.createNewFile();
             return f;
         }
         else {
-            return createFile(name, ++count, ext);
+//            return createFile(name, ++count, ext);
+            return f;
         }
 
     }

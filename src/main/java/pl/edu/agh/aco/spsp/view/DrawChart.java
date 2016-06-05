@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
 import pl.edu.agh.aco.spsp.ACOScrum;
+import pl.edu.agh.aco.spsp.Main;
 import pl.edu.agh.aco.spsp.config.ProblemConfiguration;
 
 import javax.imageio.ImageIO;
@@ -41,9 +42,10 @@ public class DrawChart extends Application {
 //    @Override
     public void start(Stage stage) throws InterruptedException {
 
+        Main.main(null);
         File folder = new File(ProblemConfiguration.SOLUTIONS_DIR);
 //        File[] listOfFiles = folder.listFiles();
-        File[] listOfFiles = new File[] {new File("data/solutions/solution/500x20(8).csv")};
+        File[] listOfFiles = new File[] {new File("data/solutions/solution/solution.csv")};
         for (int f = 0; f < listOfFiles.length; f++) {
             if (listOfFiles[f].isFile()) {
                 fileName = listOfFiles[f].getName().substring(0, listOfFiles[f].getName().indexOf("."));
@@ -53,7 +55,7 @@ public class DrawChart extends Application {
             }
 
         try {
-            graph = ACOScrum.getProblemGraphFromFile(ProblemConfiguration.DATASET_DIR + fileName.substring(0,fileName.indexOf("(")) + ".csv");
+            graph = ACOScrum.getProblemGraphFromFile(ProblemConfiguration.DATASET_DIR /*+ fileName.substring(0,fileName.indexOf("("))*/ + "data.csv");
             solution = getSolutionFromFile(ProblemConfiguration.SOLUTIONS_DIR + fileName + ".csv");
         } catch (IOException e) {
             e.printStackTrace();

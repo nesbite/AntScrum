@@ -8,7 +8,7 @@ public class ProblemConfiguration {
     public static  int NUMBER_OF_ANTS = 1;
     public static  double PROBABILITY = 1;
     public static  double EVAPORATION = 0.5;
-    public static  int Q = 200;
+    public static  int Q = 20;
     public static final double MAXIMUM_PHEROMONE = 1.0;
     public static final double MINIMUM_PHEROMONE = MAXIMUM_PHEROMONE / 5;
     public static  int MAX_ITERATIONS = 1000;

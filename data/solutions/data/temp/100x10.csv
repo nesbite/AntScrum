@@ -1,0 +1,99 @@
+Best solution makespan: 217.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 2.0750116
+Coresponding solution file: data/solutions/solution/100x10(1).csv
+
+Best solution makespan: 219.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 1.972907762
+Coresponding solution file: data/solutions/solution/100x10(2).csv
+
+Best solution makespan: 223.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 2.042792231
+Coresponding solution file: data/solutions/solution/100x10(3).csv
+
+Best solution makespan: 217.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 1.649351571
+Coresponding solution file: data/solutions/solution/100x10(4).csv
+
+Best solution makespan: 204.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 1.412329661
+Coresponding solution file: data/solutions/solution/100x10(5).csv
+
+Best solution makespan: 219.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 1.400266
+Coresponding solution file: data/solutions/solution/100x10(6).csv
+
+Best solution makespan: 214.0
+Iterations: 1000
+Ants: 7
+Probability: 1
+Evaporation: 0.5
+Q: 5
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 1.369181194
+Coresponding solution file: data/solutions/solution/100x10(7).csv
+
+Best solution makespan: 237.0
+Iterations: 1000
+Ants: 1
+Probability: 1.0
+Evaporation: 0.5
+Q: 200
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 0.937322765
+Coresponding solution file: data/solutions/solution/100x10(8).csv
+
+Best solution makespan: 231.0
+Iterations: 1000
+Ants: 1
+Probability: 1.0
+Evaporation: 0.5
+Q: 200
+Maximum pheromone: 1.0
+Minimum pheromone: 0.2
+Duration (in seconds): 0.740717901
+Coresponding solution file: data/solutions/solution/100x10(9).csv
+
