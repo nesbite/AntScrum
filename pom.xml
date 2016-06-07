@@ -26,7 +26,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>pl.edu.agh.aco.spsp.Main</mainClass>
+                            <mainClass>pl.edu.agh.aco.spsp.view.DrawChart</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
