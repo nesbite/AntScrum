@@ -1,24 +1,36 @@
 package pl.edu.agh.aco.spsp.config;
 
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class ProblemConfiguration {
 
-    public static final String DELIMITER = ",";
+    private static Properties configuration = loadProperties();
 
-    public static  int NUMBER_OF_ANTS = 1;
-    public static  double PROBABILITY = 1;
-    public static  double EVAPORATION = 0.5;
-    public static  int Q = 200;
-    public static final double MAXIMUM_PHEROMONE = 1.0;
-    public static final double MINIMUM_PHEROMONE = MAXIMUM_PHEROMONE / 5;
-    public static  int MAX_ITERATIONS = 1000;
+    private static Properties loadProperties(){
+        Properties properties = new Properties();
+        try {
+            populatePropertiesWithData(properties);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return properties;
+    }
 
+    private static void populatePropertiesWithData(Properties properties) throws IOException {
+        InputStream propertiesFile = new FileInputStream("config.properties");
+        properties.load(propertiesFile);
+        propertiesFile.close();
+    }
 
-//    public static final String FILENAME = "100x5";
-//    public static final String FILENAME = "100x5"+"_ants_"+NUMBER_OF_ANTS+"_prob_"+PROBABILITY+"_evap_"+EVAPORATION+"_q_"+Q;
-//    public static final String EXTENSION = ".csv";
-    public static final String DATASET_DIR = "data/data/";
-    public static final String SOLUTIONS_DATA_DIR = "data/solutions/data/";
-    public static final String SOLUTIONS_DIR = "data/solutions/solution/";
-    public static final String IMAGES_DIR = "data/solutions/charts/";
+    public static Properties getConfiguration(){
+        return configuration;
+    }
+
+    public static String getProperty(String property){
+        return configuration.getProperty(property);
+    }
 }
